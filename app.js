@@ -1,8 +1,13 @@
+// Variables
+
 const auth = '563492ad6f91700001000001ee39bf7723944ecd87c8df3505321ff3'
 const gallery = document.querySelector('.gallery')
 const searchInput = document.querySelector('.search-input')
 const form = document.querySelector('.search-form')
 let searchValue
+const more = document.querySelector('.more')
+let page = 1
+let fetchLink
 
 // Event listeners
 searchInput.addEventListener('input', updateInput)
@@ -10,6 +15,10 @@ form.addEventListener('submit', (e) => {
   e.preventDefault()
   searchPhotos(searchValue)
 })
+
+more.addEventListener('click', loadMore)
+
+// Functions
 
 function updateInput(e) {
   searchValue = e.target.value
@@ -43,23 +52,25 @@ function generatePictures(data) {
 }
 
 async function curatedPhotos() {
-  const data = await fetchApi(
-    'https://api.pexels.com/v1/curated?per_page=15&page=1'
-  )
+  fetchLink = 'https://api.pexels.com/v1/curated?per_page=15&page=1'
+  const data = await fetchApi(fetchLink)
   generatePictures(data)
 }
 
 async function searchPhotos(query) {
+  fetchLink = `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`
   clear()
-  const data = await fetchApi(
-    `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`
-  )
+  const data = await fetchApi(fetchLink)
   generatePictures(data)
 }
 
 function clear() {
   gallery.innerHTML = ''
   searchInput.value = ''
+}
+
+async function loadMore() {
+  page++
 }
 
 curatedPhotos()

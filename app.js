@@ -8,11 +8,13 @@ let searchValue
 const more = document.querySelector('.more')
 let page = 1
 let fetchLink
+let currentSearch
 
 // Event listeners
 searchInput.addEventListener('input', updateInput)
 form.addEventListener('submit', (e) => {
   e.preventDefault()
+  currentSearch = searchValue
   searchPhotos(searchValue)
 })
 
@@ -58,8 +60,8 @@ async function curatedPhotos() {
 }
 
 async function searchPhotos(query) {
-  fetchLink = `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`
   clear()
+  fetchLink = `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`
   const data = await fetchApi(fetchLink)
   generatePictures(data)
 }
@@ -71,6 +73,13 @@ function clear() {
 
 async function loadMore() {
   page++
+  if (currentSearch) {
+    fetchLink = `https://api.pexels.com/v1/search?query=${currentSearch}+query&per_page=15&page=${page}`
+  } else {
+    fetchLink = `https://api.pexels.com/v1/curated?per_page=15&page=${page}`
+  }
+  const data = await fetchApi(fetchLink)
+  generatePictures(data)
 }
 
 curatedPhotos()
